@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Application</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        #chat-container {
+            width: 500px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        #messages {
+            list-style: none;
+            padding: 0;
+            height: 300px;
+            overflow-y: scroll;
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+        }
+        #messages li {
+            padding: 5px 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        #input-container {
+            display: flex;
+        }
+        #input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        #send-btn, #emoji-btn {
+            padding: 10px;
+            margin-left: 10px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        #emoji-picker {
+            display: none;
+        }
+        #emoji-picker span {
+            font-size: 24px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+        #nickname-select {
+            margin-bottom: 10px;
+        }
+        #nickname-select input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        #nickname-select button {
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            margin-left: 10px;
+        }
+        #private-chat-select, #group-chat-select {
+            margin-bottom: 10px;
+        }
+        #typing-indicator {
+            font-size: 12px;
+            color: grey;
+        }
+    </style>
+</head>
+<body>
+    <div id="chat-container">
+        <div id="nickname-select">
+            <input id="nickname" placeholder="Enter your nickname..." />
+            <button id="set-nickname">Set Nickname</button>
+        </div>
+
+        <div id="private-chat-select">
+            <h4>Start Private Chat</h4>
+            <input id="user1" placeholder="Your username" />
+            <input id="user2" placeholder="Other user's username" />
+            <button id="start-private-chat">Start Chat</button>
+        </div>
+
+        <div id="group-chat-select">
+            <h4>Create/Join Group</h4>
+            <input id="group-name" placeholder="Group Name" />
+            <button id="join-group-btn">Join Group</button>
+        </div>
+
+        <ul id="messages"></ul>
+        <div id="typing-indicator"></div>
+        <div id="input-container">
+            <input id="input" placeholder="Type a message..." />
+            <button id="send-btn">Send</button>
+            <button id="emoji-btn">😀</button>
+        </div>
+        <div id="emoji-picker">
+            <span>😀</span><span>😁</span><span>😂</span><span>😍</span>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        const nicknameInput = document.getElementById('nickname');
+        const setNicknameBtn = document.getElementById('set-nickname');
+        const user1Input = document.getElementById('user1');
+        const user2Input = document.getElementById('user2');
+        const startPrivateChatBtn = document.getElementById('start-private-chat');
+        const groupInput = document.getElementById('group-name');
+        const joinGroupBtn = document.getElementById('join-group-btn');
+        const messages = document.getElementById('messages');
+        const input = document.getElementById('input');
+        const sendBtn = document.getElementById('send-btn');
+        const emojiBtn = document.getElementById('emoji-btn');
+        const emojiPicker = document.getElementById('emoji-picker');
+        const typingIndicator = document.getElementById('typing-indicator');
+
+        let nickname = '';
+        let currentRoom = '';
+
+        // Fetch messages from the backend when the page loads
+        async function fetchMessages() {
+            const response = await fetch('/api/messages'); // Adjust the API endpoint as necessary
+            const data = await response.json();
+            data.messages.forEach(msg => {
+                const item = document.createElement('li');
+                item.textContent = msg;
+                messages.appendChild(item);
+            });
+            messages.scrollTop = messages.scrollHeight; // Scroll to the bottom
+        }
+
+        // Call fetchMessages on page load
+        window.onload = fetchMessages;
+
+        // Set nickname
+        setNicknameBtn.addEventListener('click', () => {
+            nickname = nicknameInput.value || '';
+            socket.emit('setNickname', nickname);
+            nicknameInput.disabled = true;
+            setNicknameBtn.disabled = true;
+        });
+
+        // Start private chat
+        startPrivateChatBtn.addEventListener('click', () => {
+            const user1 = user1Input.value;
+            const user2 = user2Input.value;
+
+            if (user1 && user2) {
+                currentRoom = [user1, user2].sort().join('-'); // Create unique room for private chat
+                socket.emit('joinPrivateChat', { user1, user2 });
+            }
+        });
+
+        // Join group chat
+        joinGroupBtn.addEventListener('click', () => {
+            const groupName = groupInput.value;
+            if (groupName) {
+                currentRoom = groupName;
+                socket.emit('joinGroup', { groupName, nickname });
+            }
+        });
+
+        // Send message
+        sendBtn.addEventListener('click', () => {
+            const message = input.value;
+            if (message) {
+                socket.emit('sendMessage', { room: currentRoom, message });
+                input.value = '';
+                socket.emit('stopTyping', currentRoom);
+            }
+        });
+
+        // Receive messages
+        socket.on('receiveMessage', (msg) => {
+            const item = document.createElement('li');
+            item.textContent = msg;
+            messages.appendChild(item);
+            messages.scrollTop = messages.scrollHeight;
+        });
+
+        // Typing indicator
+        input.addEventListener('input', () => {
+            if (input.value) {
+                socket.emit('typing', currentRoom);
+            } else {
+                socket.emit('stopTyping', currentRoom);
+            }
+        });
+
+        socket.on('typing', (msg) => {
+            typingIndicator.textContent = msg;
+        });
+
+        socket.on('stopTyping', () => {
+            typingIndicator.textContent = '';
+        });
+
+        // Emoji picker
+        emojiBtn.addEventListener('click', () => {
+            emojiPicker.style.display = emojiPicker.style.display === 'none' ? 'block' : 'none';
+        });
+
+        emojiPicker.addEventListener('click', (e) => {
+            input.value += e.target.textContent;
+        });
+    </script>
+</body>
+</html>
