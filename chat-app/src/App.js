@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { io } from 'socket.io-client';
+import { io } from 'socket.io-client'; // Importing io from socket.io-client
 import './App.css';
 
-// Backend URL for your deployed Socket.io server
+// Use the correct backend URL for your deployed application
 const socket = io('https://chat-back-ivory.vercel.app', {
-    transports: ['websocket', 'polling'], // Ensure both transports are allowed
+    transports: ['websocket'], // Specify transports to avoid CORS issues
     withCredentials: true, // Allow credentials if needed
 });
 
@@ -19,6 +19,7 @@ function App() {
     const messagesEndRef = useRef(null);
 
     useEffect(() => {
+        // Socket event listeners
         socket.on('loadMessages', (msgs) => {
             setMessages(msgs);
         });
@@ -35,6 +36,7 @@ function App() {
         socket.on('userOnline', () => setOnline(true));
         socket.on('userOffline', () => setOnline(false));
 
+        // Cleanup function to remove listeners on unmount
         return () => {
             socket.off('loadMessages');
             socket.off('receiveMessage');
@@ -54,7 +56,7 @@ function App() {
     const handleSendMessage = () => {
         if (message.trim() && sender && receiver) {
             socket.emit('sendMessage', { sender, receiver, message });
-            setMessage('');
+            setMessage(''); // Clear input after sending
         }
     };
 
@@ -101,6 +103,7 @@ function App() {
                                 <li key={index} className={msg.sender === sender ? 'sent' : 'received'}>
                                     <strong>{msg.sender}:</strong> {msg.message}
                                     <span className="timestamp">{new Date(msg.timestamp).toLocaleTimeString()}</span>
+                                    {msg.seen && <span className="seen-status">✓</span>}
                                 </li>
                             ))}
                             {typing && <li className="typing">The other user is typing...</li>}
