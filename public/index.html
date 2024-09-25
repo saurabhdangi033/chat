@@ -115,7 +115,8 @@
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        const socket = io();
+        // Update this to your Vercel deployment link
+        const socket = io('https://chat-theta-three-16.vercel.app'); // Vercel URL for Socket.IO
 
         const nicknameInput = document.getElementById('nickname');
         const setNicknameBtn = document.getElementById('set-nickname');
@@ -136,7 +137,8 @@
 
         // Fetch messages from the backend when the page loads
         async function fetchMessages() {
-            const response = await fetch('/api/messages'); // Adjust the API endpoint as necessary
+            // Update this to your Vercel API endpoint for fetching messages
+            const response = await fetch('https://chat-theta-three-16.vercel.app/api/messages'); // Vercel URL for messages API
             const data = await response.json();
             data.messages.forEach(msg => {
                 const item = document.createElement('li');
