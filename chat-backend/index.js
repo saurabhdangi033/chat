@@ -4,10 +4,9 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const socketIo = require('socket.io');
 
-// MongoDB Connection URL
+// MongoDB Connection URL (update with your MongoDB credentials)
 const mongoURL = 'mongodb+srv://saurabhdangi03:o8EQDzFhV0u5Zx1K@cluster0.fvnbp.mongodb.net/chat?retryWrites=true&w=majority';
 
-// Connect to MongoDB
 mongoose.connect(mongoURL, {
     useNewUrlParser: true,
     useUnifiedTopology: true
@@ -27,15 +26,16 @@ const Message = mongoose.model('Message', MessageSchema);
 
 // Initialize Express app and server
 const app = express();
-app.use(cors({
-    origin: 'https://chat-front-rosy.vercel.app', // Allow your frontend URL
-    methods: ["GET", "POST"],
-    credentials: true // Allow credentials if needed
-}));
+app.use(cors());
 app.use(express.json());
 
 const server = http.createServer(app);
-const io = socketIo(server);
+const io = socketIo(server, {
+    cors: {
+        origin: "https://chat-front-rosy.vercel.app",
+        methods: ["GET", "POST"]
+    }
+});
 
 let onlineUsers = {}; // To track online users
 
