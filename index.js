@@ -3,7 +3,8 @@ const socketIo = require('socket.io');
 const mongoose = require('mongoose');
 
 // MongoDB connection string from environment variables
-const mongoURI = process.env.MONGODB_URI || 'mongodb+srv://saurabhdangi03:o8EQDzFhV0u5Zx1K@cluster0.fvnbp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'; // Use environment variable for deployment
+const mongoURI = 'mongodb+srv://saurabhdangi03:o8EQDzFhV0u5Zx1K@cluster0.fvnbp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'; // Use environment variable for MongoDB URI
+
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.error('MongoDB connection error:', err));
@@ -36,11 +37,6 @@ io.on('connection', (socket) => {
         socket.join(room);
         socket.room = room;
         console.log(`${socket.nickname} joined private chat: ${room}`);
-        
-        // Load previous messages for the room
-        Message.find({ room }).sort({ timestamp: 1 }).then(messages => {
-            socket.emit('previousMessages', messages);
-        });
     });
 
     // Join group chat
@@ -49,11 +45,6 @@ io.on('connection', (socket) => {
         socket.nickname = nickname;
         console.log(`${nickname} joined group ${groupName}`);
         io.to(groupName).emit('groupMessage', `${nickname} has joined the group!`);
-
-        // Load previous group messages
-        Message.find({ room: groupName }).sort({ timestamp: 1 }).then(messages => {
-            socket.emit('previousMessages', messages);
-        });
     });
 
     // Send messages
@@ -92,4 +83,3 @@ module.exports = (req, res) => {
         server.emit('request', req, res);
     }
 };
-
