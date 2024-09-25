@@ -29,7 +29,8 @@ const Message = mongoose.model('Message', MessageSchema);
 const app = express();
 app.use(cors({
     origin: 'https://chat-front-rosy.vercel.app', // Allow your frontend URL
-    methods: ["GET", "POST"]
+    methods: ["GET", "POST"],
+    credentials: true // Allow credentials if needed
 }));
 app.use(express.json());
 
@@ -38,8 +39,7 @@ const io = socketIo(server, {
     cors: {
         origin: 'https://chat-front-rosy.vercel.app', // Allow your frontend URL
         methods: ["GET", "POST"],
-        allowedHeaders: ["my-custom-header"],
-        credentials: true
+        credentials: true // Allow credentials if needed
     }
 });
 
