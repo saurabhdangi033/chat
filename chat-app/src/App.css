@@ -1,0 +1,175 @@
+body {
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  background-color: #051731; /* Light background for better contrast */
+}
+
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.room-selection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #2a043e; /* White background for the selection */
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+}
+
+.room-selection h1 {
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  color: #d1eac4; /* Darker text for better readability */
+}
+
+.room-selection input {
+  margin: 10px 0;
+  padding: 12px;
+  font-size: 16px;
+  width: 300px;
+  border-radius: 5px;
+  border: 1px solid #cccccc; /* Light border */
+  transition: border 0.3s;
+}
+
+.room-selection input:focus {
+  border: 1px solid #2bff00; /* Highlight border on focus */
+  outline: none; /* Remove default outline */
+}
+
+.room-selection button {
+  padding: 12px 20px;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  background-color: #4c00ff; /* Primary blue color */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.room-selection button:hover {
+  background-color: #0056b3; /* Darker shade on hover */
+}
+
+.chat-room {
+  width: 90%;
+  max-width: 700px; /* Responsive max width */
+  margin: 20px auto;
+  background-color: rgb(166, 41, 41); /* White background for chat room */
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-room h2 {
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-weight: 600;
+  color: #dfc3c3;
+}
+
+.chat-room p {
+  font-weight: 700;
+  color: #a7e3a5; /* Slightly lighter gray for online/offline status */
+}
+
+.chat-box {
+  height: 400px;
+  overflow-y: scroll;
+  border: 1px solid #cccccc;
+  border-radius: 10px;
+  padding: 10px;
+  background-color: #f9f9f9; /* Light gray for chat box background */
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-box ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.chat-box li {
+  padding: 10px 15px;
+  margin: 5px 0;
+  border-radius: 20px; /* More rounded edges */
+  position: relative;
+  max-width: 80%; /* Limit width for better readability */
+}
+
+.chat-box .sent {
+  background-color: #007bff; /* Sent message color */
+  color: white;
+  align-self: flex-end; /* Align to the right */
+  border-bottom-left-radius: 0; /* Rounded edges */
+}
+
+.chat-box .received {
+  background-color: #e0e0e0; /* Received message color */
+  color: black;
+  align-self: flex-start; /* Align to the left */
+  border-bottom-right-radius: 0; /* Rounded edges */
+}
+
+.chat-box .timestamp {
+  display: block;
+  font-size: 0.8rem;
+  margin-top: 5px;
+  color: #aaaaaa; /* Gray color for timestamp */
+}
+
+.chat-box .seen-status {
+  position: absolute;
+  bottom: 5px;
+  right: 10px;
+  font-size: 0.9rem;
+  color: #28a745; /* Green color for seen status */
+}
+
+.typing {
+  font-style: italic;
+  color: #888888; /* Lighter gray for typing indication */
+  margin-top: 5px;
+}
+
+.message-input {
+  display: flex;
+  align-items: center;
+}
+
+.message-input input {
+  flex: 1;
+  padding: 12px;
+  border-radius: 5px;
+  border: 1px solid #cccccc; /* Light border */
+  margin-right: 10px;
+  transition: border 0.3s;
+}
+
+.message-input input:focus {
+  border: 1px solid #007bff; /* Highlight border on focus */
+  outline: none; /* Remove default outline */
+}
+
+.message-input button {
+  padding: 12px 20px;
+  background-color: #007bff; /* Primary blue color */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.message-input button:hover {
+  background-color: #0056b3; /* Darker shade on hover */
+}
