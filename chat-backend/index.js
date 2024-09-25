@@ -35,13 +35,7 @@ app.use(cors({
 app.use(express.json());
 
 const server = http.createServer(app);
-const io = socketIo(server, {
-    cors: {
-        origin: 'https://chat-front-rosy.vercel.app', // Allow your frontend URL
-        methods: ["GET", "POST"],
-        credentials: true // Allow credentials if needed
-    }
-});
+const io = socketIo(server);
 
 let onlineUsers = {}; // To track online users
 
