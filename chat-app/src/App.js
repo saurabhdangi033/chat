@@ -1,8 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import io from 'socket.io-client';
+import { io } from 'socket.io-client'; // Importing io from socket.io-client
 import './App.css';
 
-const socket = io('https://chat-back-ivory.vercel.app'); // Updated URL for the backend deployed on Vercel
+// Use the correct backend URL for your deployed application
+const socket = io('https://chat-back-ivory.vercel.app', {
+    transports: ['websocket', 'polling'], // Specify transports to avoid CORS issues
+    withCredentials: true, // Allow credentials if needed
+});
 
 function App() {
     const [sender, setSender] = useState('');
@@ -16,6 +20,7 @@ function App() {
     const messagesEndRef = useRef(null);
 
     useEffect(() => {
+        // Socket event listeners
         socket.on('loadMessages', (msgs) => {
             setMessages(msgs);
         });
@@ -33,10 +38,18 @@ function App() {
             setSeenMessages((prev) => [...prev, sender]);
         });
 
-        socket.on('userOnline', ({ sender }) => setOnline(true));
-        socket.on('userOffline', ({ sender }) => setOnline(false));
+        socket.on('userOnline', () => setOnline(true));
+        socket.on('userOffline', () => setOnline(false));
 
-        return () => socket.off();
+        // Cleanup function to remove listeners on unmount
+        return () => {
+            socket.off('loadMessages');
+            socket.off('receiveMessage');
+            socket.off('userTyping');
+            socket.off('messageSeen');
+            socket.off('userOnline');
+            socket.off('userOffline');
+        };
     }, []);
 
     const handleJoinRoom = () => {
