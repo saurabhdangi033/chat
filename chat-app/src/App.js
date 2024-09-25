@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 import './App.css';
 
-const socket = io('http://localhost:4000'); // Adjust the URL based on your backend
+const socket = io('https://chat-back-ivory.vercel.app'); // Updated URL for the backend deployed on Vercel
 
 function App() {
     const [sender, setSender] = useState('');
@@ -109,7 +109,7 @@ function App() {
                             placeholder="Type a message..."
                             value={message}
                             onChange={(e) => setMessage(e.target.value)}
-                            onKeyPress={handleTyping}
+                            onKeyUp={handleTyping}
                             onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
                         />
                         <button onClick={handleSendMessage}>Send</button>
