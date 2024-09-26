@@ -86,6 +86,14 @@ io.on('connection', (socket) => {
         socket.to(roomId).emit('userTyping', { sender });
     });
 
+    // Mark message as seen
+    socket.on('markAsSeen', ({ sender, receiver }) => {
+        const roomId = [sender, receiver].sort().join('_');
+        Message.updateMany({ sender: receiver, receiver: sender, seen: false }, { seen: true }).then(() => {
+            io.to(roomId).emit('messageSeen', { sender });
+        });
+    });
+
     // Handle disconnection
     socket.on('disconnect', () => {
         let userId;

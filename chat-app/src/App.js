@@ -4,7 +4,7 @@ import './App.css';
 
 // Use the correct backend URL for your deployed application
 const socket = io('https://chat-back-ivory.vercel.app', {
-    transports: ['websocket'], // Specify transports to avoid CORS issues
+    transports: ['websocket', 'polling'], // Specify transports to avoid CORS issues
     withCredentials: true, // Allow credentials if needed
 });
 
@@ -15,6 +15,7 @@ function App() {
     const [messages, setMessages] = useState([]);
     const [typing, setTyping] = useState(false);
     const [online, setOnline] = useState(false);
+    const [seenMessages, setSeenMessages] = useState([]);
     const [isRoomJoined, setIsRoomJoined] = useState(false);
     const messagesEndRef = useRef(null);
 
@@ -28,9 +29,13 @@ function App() {
             setMessages((prev) => [...prev, msg]);
         });
 
-        socket.on('userTyping', () => {
+        socket.on('userTyping', ({ sender }) => {
             setTyping(true);
             setTimeout(() => setTyping(false), 2000);
+        });
+
+        socket.on('messageSeen', ({ sender }) => {
+            setSeenMessages((prev) => [...prev, sender]);
         });
 
         socket.on('userOnline', () => setOnline(true));
@@ -41,6 +46,7 @@ function App() {
             socket.off('loadMessages');
             socket.off('receiveMessage');
             socket.off('userTyping');
+            socket.off('messageSeen');
             socket.off('userOnline');
             socket.off('userOffline');
         };
